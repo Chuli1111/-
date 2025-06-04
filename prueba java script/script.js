@@ -1,6 +1,10 @@
 const students = [];
 
-document.getElementById("studentForm").addEventListener("submit", function (e) {
+const form = document.getElementById("studentForm");
+const tableBody = document.querySelector("#studentTable tbody");
+const averageDiv = document.getElementById("average");
+
+form.addEventListener("submit", function (e) {
     e.preventDefault();
 
     const name = document.getElementById("name").value.trim();
@@ -32,26 +36,31 @@ document.getElementById("studentForm").addEventListener("submit", function (e) {
 
     const student = { name, lastName, grade };
     students.push(student);
-    addStudentToTable(student);
+    refreshTable();
     calcularPromedio();
     this.reset();
 });
 
-const tableBody = document.querySelector("#studentTable tbody");
-
-function addStudentToTable(student) {
+function addStudentToTable(student, index) {
     const row = document.createElement("tr");
     row.innerHTML = `
         <td>${student.name}</td>
         <td>${student.lastName}</td>
         <td>${student.grade}</td>
+        <td>
+            <button onclick="editStudent(${index})">Editar</button>
+            <button onclick="deleteStudent(${index})">Eliminar</button>
+        </td>
     `;
     tableBody.appendChild(row);
 }
 
-function calcularPromedio() {
-    const averageDiv = document.getElementById("average");
+function refreshTable() {
+    tableBody.innerHTML = "";
+    students.forEach((student, index) => addStudentToTable(student, index));
+}
 
+function calcularPromedio() {
     if (students.length === 0) {
         averageDiv.textContent = "Promedio General del Curso: N/A";
         return;
@@ -60,4 +69,20 @@ function calcularPromedio() {
     const total = students.reduce((sum, student) => sum + student.grade, 0);
     const prom = total / students.length;
     averageDiv.textContent = "Promedio General del Curso: " + prom.toFixed(2);
+}
+
+function deleteStudent(index) {
+    students.splice(index, 1);
+    refreshTable();
+    calcularPromedio();
+}
+
+function editStudent(index) {
+    const student = students[index];
+
+    document.getElementById("name").value = student.name;
+    document.getElementById("lastName").value = student.lastName;
+    document.getElementById("grade").value = student.grade;
+
+    deleteStudent(index); // quita el antiguo para que el nuevo lo reemplace
 }
