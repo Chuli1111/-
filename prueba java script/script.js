@@ -84,5 +84,5 @@ function editStudent(index) {
     document.getElementById("lastName").value = student.lastName;
     document.getElementById("grade").value = student.grade;
 
-    deleteStudent(index); // quita el antiguo para que el nuevo lo reemplace
+    deleteStudent(index);
 }
